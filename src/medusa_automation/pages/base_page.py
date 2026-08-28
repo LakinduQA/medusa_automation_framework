@@ -14,9 +14,14 @@ class BasePage:
     def __init__(self, page: Page, config: AppConfig) -> None:
         self.page = page
         self.config = config
+        self.page.set_default_timeout(config.timeout_ms)
+        self.page.set_default_navigation_timeout(config.timeout_ms)
 
     def open_path(self, path: str) -> None:
-        self.page.goto(self.config.build_url(path), wait_until="domcontentloaded")
+        self.page.goto(self.config.storefront_url(path), wait_until="domcontentloaded")
+
+    def open_admin_path(self, path: str) -> None:
+        self.page.goto(self.config.admin_url(path), wait_until="domcontentloaded")
 
     def reload(self) -> None:
         self.page.reload(wait_until="domcontentloaded")

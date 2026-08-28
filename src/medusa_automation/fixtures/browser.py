@@ -6,7 +6,7 @@ import pytest
 from playwright.sync_api import Page
 
 from medusa_automation.fixtures.app import TestContext
-from medusa_automation.pages import LoginPage, ProductPage
+from medusa_automation.pages import CartPage, CheckoutPage, LoginPage, ProductPage
 
 
 @pytest.fixture
@@ -17,6 +17,16 @@ def login_page(page: Page, app_config) -> LoginPage:
 @pytest.fixture
 def product_page(page: Page, app_config) -> ProductPage:
     return ProductPage(page, app_config)
+
+
+@pytest.fixture
+def cart_page(page: Page, app_config) -> CartPage:
+    return CartPage(page, app_config)
+
+
+@pytest.fixture
+def checkout_page(page: Page, app_config) -> CheckoutPage:
+    return CheckoutPage(page, app_config)
 
 
 @pytest.fixture

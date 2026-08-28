@@ -15,7 +15,7 @@ class ProductPage(BasePage):
     save_label = re.compile(r"save|publish", re.IGNORECASE)
 
     def open_catalog(self) -> None:
-        self.open_path(self.config.products_path)
+        self.open_admin_path(self.config.products_path)
 
     def open_product(self, handle: str) -> None:
         self.page.goto(self.config.product_url(handle), wait_until="domcontentloaded")
@@ -31,3 +31,6 @@ class ProductPage(BasePage):
 
     def assert_product_page_loaded(self) -> None:
         expect(self.page.get_by_text(self.product_name)).to_be_visible()
+
+    def add_to_cart(self) -> None:
+        self.page.get_by_role("button", name=self.add_to_cart_label).click()

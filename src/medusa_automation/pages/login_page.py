@@ -15,7 +15,7 @@ class LoginPage(BasePage):
     submit_label = re.compile(r"sign in|log in|login", re.IGNORECASE)
 
     def open(self) -> None:
-        self.open_path(self.config.login_path)
+        self.open_admin_path(self.config.login_path)
 
     def login(self, email: str, password: str) -> None:
         self.page.get_by_label(self.email_label).fill(email)

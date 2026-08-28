@@ -27,7 +27,7 @@ class BaseApiClient:
             return self.config.admin_api_url(path)
         if store:
             return self.config.store_api_url(path)
-        return self.config.build_url(path)
+        return self.config.auth_api_url(path)
 
     def request(
         self,
@@ -39,7 +39,17 @@ class BaseApiClient:
         **kwargs: Any,
     ) -> APIResponse:
         timeout = kwargs.pop("timeout", self.default_timeout)
-        response = self.request_context.fetch(self.build_url(path, admin=admin, store=store), method=method.upper(), timeout=timeout, **kwargs)
+        if store and self.config.publishable_api_key:
+            headers = dict(kwargs.pop("headers", {}) or {})
+            headers.setdefault("x-publishable-api-key", self.config.publishable_api_key)
+            kwargs["headers"] = headers
+
+        response = self.request_context.fetch(
+            self.build_url(path, admin=admin, store=store),
+            method=method.upper(),
+            timeout=timeout,
+            **kwargs,
+        )
         return response
 
     def get(self, path: str, **kwargs: Any) -> APIResponse:
