@@ -27,10 +27,10 @@ class CartApiClient(BaseApiClient):
         return self.post(f"/carts/{cart_id}/line-items", json={"variant_id": variant_id, "quantity": quantity})
 
     def update_line_item(self, cart_id: str, line_item_id: str, *, quantity: int) -> APIResponse:
-        return self.patch(f"/carts/{cart_id}/line-items/{line_item_id}", json={"quantity": quantity})
+        return self.post(f"/carts/{cart_id}/line-items/{line_item_id}", json={"quantity": quantity})
 
     def remove_line_item(self, cart_id: str, line_item_id: str) -> APIResponse:
         return self.delete(f"/carts/{cart_id}/line-items/{line_item_id}")
 
     def update_cart(self, cart_id: str, **payload: Any) -> APIResponse:
-        return self.patch(f"/carts/{cart_id}", json=payload)
+        return self.post(f"/carts/{cart_id}", json=payload)

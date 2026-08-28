@@ -19,9 +19,9 @@ from medusa_automation.api import (
 @pytest.fixture
 def api_request_context(playwright: Playwright, app_config) -> Iterator[APIRequestContext]:
     context = playwright.request.new_context(
-        base_url=app_config.base_url,
+        base_url=app_config.backend_base_url or app_config.base_url,
         timeout=app_config.timeout_ms,
-        ignore_https_errors=True,
+        ignore_https_errors=app_config.ignore_https_errors,
         storage_state=app_config.storage_state_path,
     )
     try:

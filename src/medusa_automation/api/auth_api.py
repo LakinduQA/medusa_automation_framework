@@ -11,32 +11,51 @@ from medusa_automation.api.base_client import BaseApiClient
 class AuthApiClient(BaseApiClient):
     """Authentication endpoints for admin or store customers."""
 
-    def login(self, email: str, password: str, actor_type: str = "admin") -> APIResponse:
+    def login(
+        self,
+        email: str,
+        password: str,
+        actor_type: str = "user",
+        provider: str = "emailpass",
+    ) -> APIResponse:
         return self.post(
-            f"/auth/{actor_type}/emailpass",
+            f"/auth/{actor_type}/{provider}",
             json={"email": email, "password": password},
-            admin=actor_type == "admin",
-            store=actor_type != "admin",
+            admin=False,
+            store=False,
         )
 
-    def logout(self, actor_type: str = "admin") -> APIResponse:
-        return self.delete(
-            f"/auth/{actor_type}",
-            admin=actor_type == "admin",
-            store=actor_type != "admin",
-        )
-
-    def me(self, actor_type: str = "admin") -> APIResponse:
-        return self.get(
-            f"/auth/{actor_type}",
-            admin=actor_type == "admin",
-            store=actor_type != "admin",
-        )
-
-    def request_password_reset(self, email: str, actor_type: str = "admin") -> APIResponse:
+    def create_session(self, token: str) -> APIResponse:
         return self.post(
-            f"/auth/{actor_type}/reset-password",
+            "/auth/session",
+            headers={"Authorization": f"Bearer {token}"},
+            admin=False,
+            store=False,
+        )
+
+    def logout(self) -> APIResponse:
+        return self.delete(
+            "/auth/session",
+            admin=False,
+            store=False,
+        )
+
+    def me(self, actor_type: str = "user") -> APIResponse:
+        if actor_type == "user":
+            return self.get("/users/me", admin=True, store=False)
+        if actor_type == "customer":
+            return self.get("/customers/me")
+        raise ValueError("actor_type must be 'user' or 'customer'")
+
+    def request_password_reset(
+        self,
+        email: str,
+        actor_type: str = "user",
+        provider: str = "emailpass",
+    ) -> APIResponse:
+        return self.post(
+            f"/auth/{actor_type}/{provider}/reset-password",
             json={"email": email},
-            admin=actor_type == "admin",
-            store=actor_type != "admin",
+            admin=False,
+            store=False,
         )
