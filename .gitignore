@@ -17,3 +17,6 @@ venv/
 playwright-report/
 test-results/
 .DS_Store
+
+# Personal, repository-local learning notes. Keep docs/test-rca trackable.
+/docs/learning/
