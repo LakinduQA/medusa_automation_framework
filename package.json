@@ -1,0 +1,13 @@
+{
+  "name": "medusa-automation-reporting",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "report:generate": "allure awesome allure-results --config allurerc.mjs --output allure-report --single-file"
+  },
+  "devDependencies": {
+    "allure": "3.16.0"
+  }
+}

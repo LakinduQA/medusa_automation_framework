@@ -12,4 +12,5 @@ pytest_plugins = [
     "medusa_automation.fixtures.app",
     "medusa_automation.fixtures.browser",
     "medusa_automation.fixtures.api",
+    "medusa_automation.reporting",
 ]
