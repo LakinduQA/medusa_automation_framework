@@ -8,6 +8,7 @@ A Playwright and pytest foundation for testing Medusa.js storefront, Admin, and 
 - Synchronous Playwright browser automation using a Page Object Model
 - Reusable pytest fixtures for application context, browser pages, authentication, and API clients
 - Medusa v2 clients for auth, products, carts, checkout, payment setup, orders, and regions
+- Portable Allure 3 reports with failure-only Playwright screenshots and traces
 - Registered `smoke` and `e2e` pytest markers
 - Repository-scoped agent skills for assessing, authoring, reviewing, and repairing tests
 - GitHub Actions syntax validation on Linux and Windows
@@ -32,11 +33,12 @@ Browser flows are currently scaffolded; finalized test cases have not been added
 
 ## Setup with uv
 
-Requirements: Python 3.11 or newer and [uv](https://docs.astral.sh/uv/).
+Requirements: Python 3.11 or newer, [uv](https://docs.astral.sh/uv/), and Node.js 22 or newer for report generation.
 
 ```bash
 uv sync
 uv run playwright install chromium
+npm ci
 ```
 
 Copy `.env.example` to `.env`, then update the URLs, credentials, and keys required by the environment under test. The `.env` file is ignored by Git.
@@ -55,6 +57,24 @@ uv run pytest -m e2e
 ```
 
 Set `RUN_E2E=true` and provide the required application services, test data, credentials, and browser before running authenticated live flows.
+
+## Test reports
+
+Every pytest run writes Allure result data to `allure-results/`, JUnit XML to `test-results/junit.xml`, and Playwright artifacts to `test-results/`. Failed browser tests automatically retain a full-page screenshot and a Playwright trace; passing tests do not retain browser evidence.
+
+Generate the portable Allure 3 report after a run:
+
+```bash
+npm run report:generate
+```
+
+Open `allure-report/index.html` directly in a browser. The report is a single HTML file containing the test results and failure attachments. Opening a trace from the report loads the viewer from `trace.playwright.dev`; if that site is unavailable, open the downloaded `trace.zip` locally instead:
+
+```bash
+uv run playwright show-trace path/to/trace.zip
+```
+
+GitHub Actions uses the same commands and uploads the HTML report, JUnit XML, raw Allure results, and failure artifacts for each operating-system/Python matrix job. Until finalized tests are added, the workflow treats pytest's `no tests collected` result as an intentional skip; collection and configuration errors still fail CI.
 
 ## Environment variables
 

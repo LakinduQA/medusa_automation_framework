@@ -16,7 +16,13 @@ venv/
 !.env.example
 playwright-report/
 test-results/
+allure-results/
+allure-report/
+node_modules/
 .DS_Store
 
 # Personal, repository-local learning notes. Keep docs/test-rca trackable.
 /docs/learning/
+
+#to-do
+to-do.md

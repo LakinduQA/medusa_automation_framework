@@ -9,6 +9,7 @@ description = "Playwright + pytest automation framework for Medusa.js applicatio
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "allure-pytest>=2.16.0",
   "playwright>=1.49.0",
   "pytest>=8.3.0",
   "pytest-playwright>=0.6.2",
@@ -22,7 +23,18 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers --strict-config"
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--alluredir=allure-results",
+  "--clean-alluredir",
+  "--output=test-results",
+  "--screenshot=only-on-failure",
+  "--full-page-screenshot",
+  "--tracing=retain-on-failure",
+  "--junitxml=test-results/junit.xml",
+]
 markers = [
   "smoke: quick checks against the Medusa app",
   "e2e: live browser tests that require a running application",
