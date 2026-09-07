@@ -22,7 +22,8 @@ The source portfolio contains 90 unique cases. Eighty-nine are implemented; `TC-
 ```text
 .
 |-- .agents/skills/                 Repository-scoped test automation skills
-|-- .github/workflows/ci.yml        CI syntax validation
+|-- .github/workflows/medusa-storefront-tests.yml
+|                                   Framework and live E2E automation
 |-- src/medusa_automation/
 |   |-- api/                        Reusable Medusa API clients
 |   |-- fixtures/                   Shared pytest fixtures
@@ -106,6 +107,8 @@ uv run playwright show-trace path/to/trace.zip
 ```
 
 GitHub Actions uses the same commands and uploads the HTML report, JUnit XML, raw Allure results, and failure artifacts for each operating-system/Python matrix job. Until finalized tests are added, the workflow treats pytest's `no tests collected` result as an intentional skip; collection and configuration errors still fail CI.
+
+The workflow runs collection and framework contract tests on every branch push and pull request. The live browser job is intentionally separate because a GitHub-hosted runner cannot reach a developer's `localhost` storefront. To enable it, create a protected GitHub environment named `storefront-e2e`, add a multiline `E2E_ENV` secret containing the required `.env` values, and set the repository variable `RUN_STOREFRONT_E2E=true`. It can also be requested from **Run workflow** with the `run_e2e` input, but the protected environment secret is still required.
 
 ## Environment variables
 
