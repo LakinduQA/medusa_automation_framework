@@ -38,4 +38,7 @@ addopts = [
 markers = [
   "smoke: quick checks against the Medusa app",
   "e2e: live browser tests that require a running application",
+  "source_case(case_id): traceability to a source workbook test-case ID",
+  "partial: deterministic automation portion of a case that retains manual coverage",
+  "resilience: controlled failure, recovery, or idempotency scenario",
 ]

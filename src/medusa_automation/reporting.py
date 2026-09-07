@@ -2,14 +2,22 @@ from __future__ import annotations
 
 import os
 import platform
-from pathlib import Path
 import warnings
+from pathlib import Path
 
 import allure
 import pytest
 
-
 PLAYWRIGHT_TRACE_MEDIA_TYPE = "application/vnd.allure.playwright-trace"
+
+
+@pytest.fixture(autouse=True)
+def label_source_case(request: pytest.FixtureRequest) -> None:
+    marker = request.node.get_closest_marker("source_case")
+    if marker and marker.args:
+        source_id = str(marker.args[0])
+        allure.dynamic.label("source_case", source_id)
+        allure.dynamic.tag(source_id)
 
 
 def _allure_results_dir(config: pytest.Config) -> Path | None:

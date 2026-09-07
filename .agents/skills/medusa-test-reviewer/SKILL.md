@@ -1,15 +1,17 @@
 ---
 name: medusa-test-reviewer
-description: Review an existing Medusa pytest/Playwright test against its supplied test case for coverage, assertion quality, false positives, resilience, isolation, dependencies, secrets, and Page Object conventions. Use for review findings, not implementation or failure repair, and do not edit unless explicitly asked.
+description: Review one or more Medusa pytest/Playwright tests against their source cases for coverage, traceability, assertion quality, false positives, resilience, isolation, dependencies, secrets, and Page Object conventions. Use for review findings, not implementation or failure repair, and do not edit unless explicitly asked.
 ---
 
 # Medusa Test Reviewer
 
-Compare the supplied test case with the existing test implementation and produce evidence-based review findings. This is a review workflow: do not edit files unless the user explicitly asks for changes.
+Compare the supplied test cases with the existing implementation and produce evidence-based review findings. This is a review workflow: do not edit files unless the user explicitly asks for changes.
 
 ## Gather evidence
 
 Read the complete test case, the test file, imported fixtures and helpers, relevant Page Objects and API clients, `conftest.py`, `pyproject.toml`, `.env.example`, and related tests. Use line-specific references for findings. Collection or other read-only diagnostics are appropriate when useful; do not run live, externally mutating tests merely to perform a review unless the user asks.
+
+For a batch, reconcile every expected source ID with collected tests. Report missing, duplicated, unknown, blocked-but-implemented, or untraceable cases before reviewing individual behavior. Check that approved consolidation remains parameterized without erasing case-specific expected results or manual complements.
 
 ## Review criteria
 

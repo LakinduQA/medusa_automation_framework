@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
 from urllib.parse import urljoin
 
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -44,8 +43,12 @@ class AppConfig:
     backend_base_url: str | None = None
     storefront_base_url: str | None = None
     admin_base_url: str | None = None
-    login_path: str = "/app/login"
+    login_path: str = "/app"
     products_path: str = "/app/products"
+    storefront_home_path: str = "/"
+    customer_login_path: str = "/account"
+    customer_account_path: str = "/account"
+    product_listing_path: str = "/store"
     product_path_template: str = "/products/{handle}"
     cart_path: str = "/cart"
     checkout_path: str = "/checkout"
@@ -61,7 +64,7 @@ class AppConfig:
     run_live_tests: bool = False
 
     @classmethod
-    def from_env(cls) -> "AppConfig":
+    def from_env(cls) -> AppConfig:
         defaults = cls()
         base_url = _env_text("BASE_URL", defaults.base_url).rstrip("/")
         storage_state_path = os.getenv("STORAGE_STATE_PATH", "").strip() or None
@@ -72,7 +75,21 @@ class AppConfig:
             admin_base_url=_env_text("ADMIN_URL", base_url).rstrip("/"),
             login_path=_env_text("ADMIN_LOGIN_PATH", defaults.login_path),
             products_path=_env_text("PRODUCTS_PATH", defaults.products_path),
-            product_path_template=_env_text("PRODUCT_PATH_TEMPLATE", defaults.product_path_template),
+            storefront_home_path=_env_text(
+                "STOREFONT_HOME_PATH", defaults.storefront_home_path
+            ),
+            customer_login_path=_env_text(
+                "CUSTOMER_LOGIN_PATH", defaults.customer_login_path
+            ),
+            customer_account_path=_env_text(
+                "CUSTOMER_ACCOUNT_PATH", defaults.customer_account_path
+            ),
+            product_listing_path=_env_text(
+                "PRODUCT_LISTING_PATH", defaults.product_listing_path
+            ),
+            product_path_template=_env_text(
+                "PRODUCT_PATH_TEMPLATE", defaults.product_path_template
+            ),
             cart_path=_env_text("CART_PATH", defaults.cart_path),
             checkout_path=_env_text("CHECKOUT_PATH", defaults.checkout_path),
             store_api_path=_env_text("STORE_API_PATH", defaults.store_api_path),
@@ -83,7 +100,9 @@ class AppConfig:
             browser=_env_text("BROWSER", defaults.browser),
             timeout_ms=_env_int("TIMEOUT_MS", defaults.timeout_ms),
             storage_state_path=storage_state_path,
-            ignore_https_errors=_env_bool("IGNORE_HTTPS_ERRORS", defaults.ignore_https_errors),
+            ignore_https_errors=_env_bool(
+                "IGNORE_HTTPS_ERRORS", defaults.ignore_https_errors
+            ),
             run_live_tests=_env_bool("RUN_E2E", defaults.run_live_tests),
         )
 

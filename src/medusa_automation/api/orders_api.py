@@ -15,4 +15,9 @@ class OrdersApiClient(BaseApiClient):
         return self.get(f"/orders/{order_id}")
 
     def list_orders(self, *, limit: int = 20, offset: int = 0) -> APIResponse:
-        return self.get("/orders", params={"limit": limit, "offset": offset}, admin=True, store=False)
+        return self.get(
+            "/orders",
+            params={"limit": limit, "offset": offset},
+            admin=True,
+            store=False,
+        )

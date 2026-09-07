@@ -18,9 +18,9 @@ Automatic selection is convenient for ordinary requests. Explicit invocation is 
 
 | Skill | Use it when | Result | It does not |
 |---|---|---|---|
-| `medusa-test-case-assessor` | A test case needs feasibility and completeness analysis | `feasible`, `conditionally feasible`, or `blocked`, plus an implementation outline | Write or edit tests |
-| `medusa-test-author` | A test case is approved or sufficiently complete | Focused pytest/Playwright code and targeted validation | Guess through material gaps or repair an unrelated failure |
-| `medusa-test-reviewer` | Existing code must be compared with its source test case | Severity-ranked findings, coverage mapping, and verdict | Edit files unless explicitly requested |
+| `medusa-test-case-assessor` | One case or a workbook/batch needs feasibility and completeness analysis | One verdict and recommendation per case, with batch reconciliation and consolidation guidance where applicable | Write or edit tests |
+| `medusa-test-author` | One case or an assessed batch is approved or sufficiently complete | Traceable pytest/Playwright code, consolidated where appropriate, and targeted validation | Guess through material gaps or repair an unrelated failure |
+| `medusa-test-reviewer` | Existing code must be compared with one or more source cases | Severity-ranked findings, source-ID reconciliation, coverage mapping, and verdict | Edit files unless explicitly requested |
 | `medusa-test-failure-fixer` | A specific test is failing and needs diagnosis and repair | Evidence-backed RCA, smallest safe local fix, and verification | Hide product/environment defects or run the whole suite as a general service |
 
 The boundaries prevent similar prompts from activating the wrong workflow. For example, "Can this test be automated?" is assessment, while "Implement this approved test" is authoring. "Review this test" does not authorize edits, while "Fix this failing test" does.
@@ -61,6 +61,12 @@ Assess whether this checkout test case is automatable and identify missing test 
 ```
 
 Expected skill: `medusa-test-case-assessor`
+
+```text
+Assess every case in this workbook, identify consolidation opportunities, and reconcile the totals. Do not write tests.
+```
+
+Expected skill: `medusa-test-case-assessor` (batch result)
 
 ```text
 Implement this approved cart test as a Playwright pytest test.
@@ -106,7 +112,7 @@ Explicit selection chooses the workflow, but it does not broaden permissions. A 
 
 ## How the skills use the framework
 
-- The assessor inspects configuration, fixtures, API clients, Page Objects, existing tests, and environment dependencies before deciding feasibility.
+- The assessor inspects configuration, fixtures, API clients, Page Objects, existing tests, and environment dependencies before deciding feasibility. For batches, it also returns one row per case, recommendation and verdict totals, consolidation groups, partial/manual boundaries, and source-quality findings.
 - The author reuses the same framework layers and adds the smallest test-specific code required.
 - The reviewer traces each source test-case step through the test and its dependencies.
 - The failure fixer reproduces one target, uses framework artifacts as evidence, and writes a tracked report under `docs/test-rca/`.

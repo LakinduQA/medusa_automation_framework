@@ -1,24 +1,24 @@
 """Medusa automation framework package."""
 
-from .config import AppConfig, Credentials
 from .api import (
-	AuthApiClient,
-	BaseApiClient,
-	CartApiClient,
-	CheckoutApiClient,
-	OrdersApiClient,
-	ProductsApiClient,
-	RegionsApiClient,
+    AuthApiClient,
+    BaseApiClient,
+    CartApiClient,
+    CheckoutApiClient,
+    OrdersApiClient,
+    ProductsApiClient,
+    RegionsApiClient,
 )
+from .config import AppConfig, Credentials
 
 __all__ = [
-	"AppConfig",
-	"AuthApiClient",
-	"BaseApiClient",
-	"CartApiClient",
-	"CheckoutApiClient",
-	"Credentials",
-	"OrdersApiClient",
-	"ProductsApiClient",
-	"RegionsApiClient",
+    "AppConfig",
+    "AuthApiClient",
+    "BaseApiClient",
+    "CartApiClient",
+    "CheckoutApiClient",
+    "Credentials",
+    "OrdersApiClient",
+    "ProductsApiClient",
+    "RegionsApiClient",
 ]

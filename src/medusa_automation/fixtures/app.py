@@ -4,6 +4,7 @@ import os
 from dataclasses import dataclass
 
 import pytest
+
 from medusa_automation.config import AppConfig, Credentials
 
 
@@ -32,7 +33,9 @@ def admin_credentials() -> Credentials | None:
 
 
 @pytest.fixture(scope="session")
-def live_test_context(app_config: AppConfig, admin_credentials: Credentials | None) -> TestContext:
+def live_test_context(
+    app_config: AppConfig, admin_credentials: Credentials | None
+) -> TestContext:
     return TestContext(config=app_config, admin_credentials=admin_credentials)
 
 
