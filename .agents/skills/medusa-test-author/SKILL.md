@@ -1,15 +1,17 @@
 ---
 name: medusa-test-author
-description: Implement an approved or sufficiently complete Medusa test case as pytest/Playwright code in this repository. Use for authoring tests and only the necessary supporting Page Object or fixture changes, not for feasibility assessment, review-only requests, or failure repair.
+description: Implement one or more approved Medusa test cases as maintainable pytest/Playwright code in this repository, including reconciled batch or suite authoring. Use for test authoring and necessary framework support, not feasibility assessment, review-only requests, or failure repair.
 ---
 
 # Medusa Test Author
 
-Turn a supplied, approved or sufficiently complete test case into focused pytest/Playwright code that follows this repository's conventions.
+Turn supplied, approved or sufficiently complete test cases into focused pytest/Playwright code that follows this repository's conventions.
 
 ## Confirm the implementation basis
 
-Read the complete test case and any assessment. If an assessment is `blocked`, do not implement until the blocker is resolved. For a `conditionally feasible` case, implement only when the stated conditions are satisfied or the user accepts explicit, low-risk assumptions. If no assessment exists, confirm from the case itself that the actions, expected results, prerequisites, and test data are sufficiently defined; otherwise report the precise gaps without producing a speculative test.
+Read every in-scope test case and any assessment. If an assessment is `blocked`, do not implement that case until the blocker is resolved. For a `conditionally feasible` case, implement only when the stated conditions are satisfied, represented as explicit environment/test-data gates, or the user accepts named low-risk assumptions. If no assessment exists, confirm from the case itself that the actions, expected results, prerequisites, and test data are sufficiently defined; otherwise report the precise gaps without producing a speculative test.
+
+For a batch, reconcile the source-case count before editing. Preserve every source ID, consolidation group, partial/manual boundary, and intentionally blocked case. Do not silently omit a case, count one case twice, or convert a missing acceptance criterion into an executable assertion.
 
 Inspect `README.md`, `pyproject.toml`, `.env.example`, `conftest.py`, existing tests, and relevant code under:
 
@@ -19,7 +21,7 @@ Inspect `README.md`, `pyproject.toml`, `.env.example`, `conftest.py`, existing t
 
 The repository uses synchronous Playwright, pytest fixtures registered through `conftest.py`, and strict `smoke` and `e2e` markers. Preserve those choices.
 
-## Implement the narrow test
+## Implement the tests
 
 - Add tests under `tests/` using pytest discovery names.
 - Map every test-case step to an action and every expected result to a meaningful assertion. Assert business outcomes or observable state, not merely that an action completed.
@@ -31,6 +33,8 @@ The repository uses synchronous Playwright, pytest fixtures registered through `
 - Keep tests independent and repeatable. Use unique data when collisions are possible and clean up state created by the test when a safe repository-supported mechanism exists.
 - Read credentials and keys through existing configuration or fixtures. Never hard-code, log, snapshot, or commit secrets.
 - Apply `pytest.mark.smoke` to genuinely quick, focused checks and `pytest.mark.e2e` to live end-to-end browser flows. Do not add unregistered markers.
+- Preserve source-case traceability in test metadata. For a batch, prefer maintainable parameterization for approved consolidation groups while ensuring each source ID produces exactly one collected case.
+- Gate only missing environment, service, credential, or test-data prerequisites before the behavior under test begins. Once prerequisites are satisfied, let expected-result failures remain failures.
 - Preserve established live-environment gates such as `RUN_E2E`; do not add skips merely to avoid a failure.
 
 Do not broaden the test case, refactor unrelated framework code, change external systems beyond the case's authorized test actions, or commit or push changes.
@@ -43,4 +47,4 @@ Run the narrowest useful checks:
 2. `uv run pytest -q <test-node-id>` when the required application, data, browsers, configuration, and credentials are available
 3. a relevant syntax or static check for any supporting files changed
 
-Do not claim runtime success when a live dependency is unavailable. Report the exact command run, result, and any environment limitation. Summarize the files changed and how the implementation covers the original steps.
+For a batch, also reconcile the collected source IDs and totals against the assessment, including blocked cases that remain intentionally unimplemented. Do not claim runtime success when a live dependency is unavailable. Report the exact command run, result, and any environment limitation. Summarize the files changed and how the implementation covers the original steps.

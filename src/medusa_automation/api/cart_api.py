@@ -12,7 +12,9 @@ from medusa_automation.api.base_client import BaseApiClient
 class CartApiClient(BaseApiClient):
     """Cart lifecycle helpers."""
 
-    def create_cart(self, *, region_id: str | None = None, currency_code: str | None = None) -> APIResponse:
+    def create_cart(
+        self, *, region_id: str | None = None, currency_code: str | None = None
+    ) -> APIResponse:
         payload: dict[str, Any] = {}
         if region_id:
             payload["region_id"] = region_id
@@ -23,11 +25,20 @@ class CartApiClient(BaseApiClient):
     def get_cart(self, cart_id: str) -> APIResponse:
         return self.get(f"/carts/{cart_id}")
 
-    def add_line_item(self, cart_id: str, *, variant_id: str, quantity: int = 1) -> APIResponse:
-        return self.post(f"/carts/{cart_id}/line-items", json={"variant_id": variant_id, "quantity": quantity})
+    def add_line_item(
+        self, cart_id: str, *, variant_id: str, quantity: int = 1
+    ) -> APIResponse:
+        return self.post(
+            f"/carts/{cart_id}/line-items",
+            json={"variant_id": variant_id, "quantity": quantity},
+        )
 
-    def update_line_item(self, cart_id: str, line_item_id: str, *, quantity: int) -> APIResponse:
-        return self.post(f"/carts/{cart_id}/line-items/{line_item_id}", json={"quantity": quantity})
+    def update_line_item(
+        self, cart_id: str, line_item_id: str, *, quantity: int
+    ) -> APIResponse:
+        return self.post(
+            f"/carts/{cart_id}/line-items/{line_item_id}", json={"quantity": quantity}
+        )
 
     def remove_line_item(self, cart_id: str, line_item_id: str) -> APIResponse:
         return self.delete(f"/carts/{cart_id}/line-items/{line_item_id}")

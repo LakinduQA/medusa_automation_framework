@@ -30,13 +30,20 @@ def checkout_page(page: Page, app_config) -> CheckoutPage:
 
 
 @pytest.fixture
-def authenticated_page(page: Page, live_test_context: TestContext, run_live_tests: bool) -> Iterator[Page]:
+def authenticated_page(
+    page: Page, live_test_context: TestContext, run_live_tests: bool
+) -> Iterator[Page]:
     if not run_live_tests:
         pytest.skip("Set RUN_E2E=true to use authenticated browser flows.")
     if live_test_context.admin_credentials is None:
-        pytest.skip("Set ADMIN_EMAIL and ADMIN_PASSWORD for authenticated browser flows.")
+        pytest.skip(
+            "Set ADMIN_EMAIL and ADMIN_PASSWORD for authenticated browser flows."
+        )
 
     login = LoginPage(page, live_test_context.config)
     login.open()
-    login.login(live_test_context.admin_credentials.email, live_test_context.admin_credentials.password)
+    login.login(
+        live_test_context.admin_credentials.email,
+        live_test_context.admin_credentials.password,
+    )
     yield page

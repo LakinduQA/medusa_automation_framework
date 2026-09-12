@@ -1,0 +1,181 @@
+name: Medusa Storefront Test Automation
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: Run the live storefront E2E suite
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storefront-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  framework-tests:
+    name: Framework tests (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v9
+        with:
+          version: "0.12.10"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install locked Python dependencies
+        run: uv sync --frozen
+
+      - name: Install locked report dependencies
+        run: npm ci
+
+      - name: Validate Python syntax
+        run: uv run python -m compileall -q src tests scripts conftest.py
+
+      - name: Collect source-aligned test scripts
+        id: test-discovery
+        shell: pwsh
+        run: |
+          uv run pytest --collect-only -q
+          $collectionExitCode = $LASTEXITCODE
+
+          if ($collectionExitCode -eq 5) {
+            "has-tests=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Output "No tests were collected; execution and reporting will be skipped."
+            exit 0
+          }
+
+          if ($collectionExitCode -ne 0) {
+            exit $collectionExitCode
+          }
+
+          "has-tests=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Run framework contract tests
+        if: steps.test-discovery.outputs.has-tests == 'true'
+        run: uv run pytest -q tests/unit
+
+      - name: Generate framework Allure report
+        if: always() && steps.test-discovery.outputs.has-tests == 'true'
+        run: npm run report:generate
+
+      - name: Upload framework report and evidence
+        if: always() && steps.test-discovery.outputs.has-tests == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: framework-report-${{ runner.os }}-py${{ matrix.python-version }}
+          path: |
+            allure-report/index.html
+            allure-results/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+  storefront-e2e:
+    name: Live storefront E2E (Chromium)
+    if: >-
+      (vars.RUN_STOREFRONT_E2E == 'true' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_e2e)) &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    needs: framework-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: storefront-e2e
+    env:
+      RUN_E2E: "true"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v9
+        with:
+          version: "0.12.10"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install locked dependencies
+        run: |
+          uv sync --frozen
+          npm ci
+
+      - name: Create protected E2E environment file
+        shell: pwsh
+        env:
+          E2E_ENV_CONTENT: ${{ secrets.E2E_ENV }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:E2E_ENV_CONTENT)) {
+            throw "The storefront-e2e environment must define the multiline E2E_ENV secret."
+          }
+
+          $encoding = [System.Text.UTF8Encoding]::new($false)
+          [System.IO.File]::WriteAllText(
+            (Join-Path $PWD ".env"),
+            $env:E2E_ENV_CONTENT,
+            $encoding
+          )
+
+      - name: Install Chromium and Linux dependencies
+        run: uv run playwright install --with-deps chromium
+
+      - name: Run live storefront test scripts
+        run: uv run pytest -m e2e
+
+      - name: Generate storefront Allure report
+        if: always()
+        run: npm run report:generate
+
+      - name: Upload storefront report and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: storefront-e2e-report
+          path: |
+            allure-report/index.html
+            allure-results/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14

@@ -12,7 +12,9 @@ from medusa_automation.api.base_client import BaseApiClient
 class ProductsApiClient(BaseApiClient):
     """Store and admin product operations."""
 
-    def list_products(self, *, limit: int = 20, offset: int = 0, q: str | None = None) -> APIResponse:
+    def list_products(
+        self, *, limit: int = 20, offset: int = 0, q: str | None = None
+    ) -> APIResponse:
         params: dict[str, Any] = {"limit": limit, "offset": offset}
         if q:
             params["q"] = q
@@ -31,4 +33,9 @@ class ProductsApiClient(BaseApiClient):
         return self.get("/product-categories")
 
     def admin_list_products(self, *, limit: int = 20, offset: int = 0) -> APIResponse:
-        return self.get("/products", params={"limit": limit, "offset": offset}, admin=True, store=False)
+        return self.get(
+            "/products",
+            params={"limit": limit, "offset": offset},
+            admin=True,
+            store=False,
+        )
